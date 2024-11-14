@@ -90,11 +90,25 @@ module.exports.changeMulti = async (req, res) => {
                     message: "Cập Nhật Trạng Thái Thành Công"
                 });
                 break;
-
+            case "delete":
+                await Task.updateMany(
+                    {
+                        _id: { $in: ids }
+                    },
+                    {
+                        deleted: true,
+                        deletedAt: new Date()
+                    }
+                )
+                res.json({
+                    code: 200,
+                    message: "Xóa Thành Công"
+                })
+                break;
             default:
                 res.json({
                     code: 400,
-                    message: "Không Tồn Tại"
+                    message: "Lỗi!!"
                 })
         }
 
@@ -107,20 +121,20 @@ module.exports.changeMulti = async (req, res) => {
     }
 }
 //[post]/api/v1/tasks/create
-module.exports.create = async(req,res)=>{
+module.exports.create = async (req, res) => {
     try {
         const task = new Task(req.body);
         const data = await task.save();
 
         res.json({
-            code:200,
-            message:"Tạo Thành Công",
+            code: 200,
+            message: "Tạo Thành Công",
             data: data
         })
     } catch (error) {
         res.json({
-            code:400,
-            message:"Fail",
+            code: 400,
+            message: "Fail",
         })
     }
 }
@@ -128,37 +142,37 @@ module.exports.create = async(req,res)=>{
 module.exports.edit = async (req, res) => {
     try {
         const id = req.params.id;
-        await Task.updateOne({_id:id},req.body)
+        await Task.updateOne({ _id: id }, req.body)
 
         res.json({
-            code:200,
-            message:"Cập Nhật Công Việc Thành Công"
+            code: 200,
+            message: "Cập Nhật Công Việc Thành Công"
         })
     } catch (error) {
         res.json({
-            code:400,
-            message:"Fail"
+            code: 400,
+            message: "Fail"
         })
     }
 }
 //[DELETE]/api/v1/delete/:id
-module.exports.delete = async (req, res) =>{
+module.exports.delete = async (req, res) => {
     try {
         const id = req.params.id;
-        await Task.updateOne({_id:id},{
-            deleted:true,
+        await Task.updateOne({ _id: id }, {
+            deleted: true,
             deletedAt: new Date()
         })
         res.json({
-            code:200,
-            message:"Xóa Thành Công"
+            code: 200,
+            message: "Xóa Thành Công"
 
         })
     } catch (error) {
-           res.json({
-            code:400,
-            message:"Thất Bại"
-            
+        res.json({
+            code: 400,
+            message: "Thất Bại"
+
         })
     }
 }
