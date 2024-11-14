@@ -11,7 +11,7 @@ module.exports.index = async (req, res) => {
     }
     //search
     let objectSearch = searchHelper(req.query);
-    if(req.query.keyword){
+    if (req.query.keyword) {
         find.title = objectSearch.regex;
     }
     //end-search
@@ -34,9 +34,9 @@ module.exports.index = async (req, res) => {
     }
     //EndSort
     const task = await Task.find(find)
-    .sort(sort)
-    .limit(objectPagination.limitItems)
-    .skip(objectPagination.skip);
+        .sort(sort)
+        .limit(objectPagination.limitItems)
+        .skip(objectPagination.skip);
 
     res.json(task);
 }
@@ -54,23 +54,55 @@ module.exports.detail = async (req, res) => {
 }
 //[Patch]/api/v1/tasks/change-status/:id
 module.exports.changeStatus = async (req, res) => {
-    try{
-    const id = req.params.id;
-    const status = req.body.status;
-    await Task.updateOne({
-        _id:id
-    },{
-        status: status
-    })
-    res.json({
-        code:200,
-        message:"Cập Nhật Trạng Thái Thành Công"
-    })
-    }
-    catch(error){
+    try {
+        const id = req.params.id;
+        const status = req.body.status;
+        await Task.updateOne({
+            _id: id
+        }, {
+            status: status
+        })
         res.json({
-            code:400,
-            message:"Không Tồn Tại"
+            code: 200,
+            message: "Cập Nhật Trạng Thái Thành Công"
+        })
+    }
+    catch (error) {
+        res.json({
+            code: 400,
+            message: "Không Tồn Tại"
+        })
+    }
+}
+//[Patch]/api/v1/tasks/change-multi
+module.exports.changeMulti = async (req, res) => {
+    try {
+        const { ids, key, value } = req.body;
+        switch (key) {
+            case "status":
+                await Task.updateMany({
+                    _id: { $in: ids }
+                }, {
+                    status: value
+                });
+                res.json({
+                    code: 200,
+                    message: "Cập Nhật Trạng Thái Thành Công"
+                });
+                break;
+
+            default:
+                res.json({
+                    code: 400,
+                    message: "Không Tồn Tại"
+                })
+        }
+
+    }
+    catch (error) {
+        res.json({
+            code: 400,
+            message: "Không Tồn Tại"
         })
     }
 }
